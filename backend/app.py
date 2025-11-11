@@ -4,10 +4,8 @@ from fastapi import FastAPI, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from PyPDF2 import PdfReader
-
 from classifier import simple_classify, suggest_reply
-from hf_client import classify_with_hf, generate_reply_with_hf
-
+from gemini_client import classify_with_gemini, generate_reply_with_gemini
 
 app = FastAPI(title="AutoU Email Assistant")
 
@@ -74,14 +72,14 @@ async def process_email(
 
     preview = content[:400] + ("..." if len(content) > 400 else "")
 
-    category_hf = classify_with_hf(content)
-    if category_hf is not None:
-        reply_hf = generate_reply_with_hf(category_hf, content) or suggest_reply(category_hf, content)
+    category_ai = classify_with_gemini(content)
+    if category_ai is not None:
+        reply_ai = generate_reply_with_gemini(category_ai, content) or suggest_reply(category_ai, content)
         return ProcessResponse(
-            category=category_hf,
-            reply=reply_hf,
+            category=category_ai,
+            reply=reply_ai,
             preview=preview,
-            provider="huggingface",
+            provider="gemini",
         )
 
     category = simple_classify(content)

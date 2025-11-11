@@ -18,7 +18,7 @@ PRODUCTIVE_HINTS = [
 
 UNPRODUCTIVE_HINTS = [
     "feliz natal","boas festas","bom dia","boa tarde","boa noite","agradeço","obrigado",
-    "parabéns","congratulations","felicidades","sem demanda","apenas informando"
+    "parabéns","congratulations","felicidades","sem demanda","apenas informando","improdutivo"
 ]
 
 def clean(text: str) -> str:

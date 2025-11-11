@@ -4,40 +4,102 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AutoU Email Assistant</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="./assets/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="./assets/favicon-192.png" sizes="192x192" />
+  <meta name="theme-color" content="#ffffff" />
+
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <main class="container">
-    <h1>Classificador de Emails</h1>
-    <p class="hint">Envie um .txt/.pdf ou cole o texto abaixo.</p>
+    <header class="header">
+      <div class="brand">
+        <img class="logo" src="./assets/logo.svg" alt="Logo AutoU" width="88" height="88" />
+        <div class="titles">
+          <h1>AutoU Email Assistant</h1>
+          <p class="hint">Envie um .txt/.pdf, arraste para a área abaixo, ou cole o texto.</p>
+        </div>
+      </div>
+      <button id="toggle-api" class="btn-ghost" aria-expanded="false">Preferências</button>
+    </header>
 
-    <form id="email-form">
-      <label class="file">
-        <span>Arquivo (.txt ou .pdf)</span>
-        <input type="file" id="file" accept=".txt,.pdf" />
+    <section id="api-config" class="api-config hidden" aria-hidden="true">
+      <label class="api-field">
+        <span>Endpoint da API</span>
+        <input id="apiBaseInput" type="url" placeholder="http://localhost:8000" />
       </label>
+      <div class="api-actions">
+        <button id="saveApi" class="btn">Salvar</button>
+        <button id="resetApi" class="btn-ghost">Restaurar padrão</button>
+      </div>
+    </section>
 
-      <div class="divider">ou</div>
+    <form id="email-form" autocomplete="off">
+      <div id="dropzone" class="dropzone" tabindex="0" role="button" aria-label="Área para soltar arquivo">
+        <div class="dropzone-inner">
+          <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path d="M12 16V4m0 0l-4 4m4-4l4 4M6 16h12a2 2 0 002-2V9a2 2 0 00-2-2h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+          <p><strong>Arraste e solte</strong> um arquivo aqui, ou clique para selecionar</p>
+          <small>.txt ou .pdf • até 10 MB</small>
+          <input type="file" id="file" accept=".txt,.pdf" hidden />
+        </div>
+      </div>
+
+      <div id="fileChip" class="file-chip hidden">
+        <span id="fileName"></span>
+        <button type="button" id="clearFile" class="chip-x" aria-label="Remover arquivo">×</button>
+      </div>
 
       <label class="text">
         <span>Texto do email</span>
         <textarea id="text" rows="8" placeholder="Cole aqui o conteúdo do email..."></textarea>
+        <div class="meta-row">
+          <small id="charCount">0 caracteres</small>
+          <small class="muted">Dica: Ctrl/Cmd + Enter para enviar</small>
+        </div>
       </label>
 
-      <button type="submit" id="submit">Processar</button>
+      <div class="actions">
+        <button type="submit" id="submit" class="btn">Processar</button>
+        <button type="button" id="clearAll" class="btn-ghost">Limpar</button>
+      </div>
     </form>
 
-    <section id="result" class="hidden">
-      <h2>Resultado</h2>
-      <p><strong>Categoria:</strong> <span id="category"></span></p>
-      <p><strong>Resposta sugerida:</strong></p>
-      <pre id="reply"></pre>
-      <details>
-        <summary>Prévia do texto analisado</summary>
-        <pre id="preview"></pre>
-      </details>
+    <section id="result" class="card hidden" aria-live="polite">
+      <div class="result-head skeleton-parent">
+        <h2>Resultado</h2>
+        <span id="categoryBadge" class="badge">…</span>
+        <span id="methodBadge" class="badge badge--method" title="Origem da decisão">—</span>
+      </div>
+
+      <div id="statline" class="statline hidden">
+        <small id="elapsed">—</small>
+        <small id="modelInfo" class="muted"> </small>
+      </div>
+
+      <div class="result-grid">
+        <div>
+          <p class="label">Resposta sugerida</p>
+          <pre id="reply" class="codeblock skeleton"></pre>
+          <button id="copyReply" class="btn-ghost small">Copiar resposta</button>
+        </div>
+
+        <div>
+          <p class="label">Prévia do texto analisado</p>
+          <pre id="preview" class="codeblock skeleton"></pre>
+          <button id="copyPreview" class="btn-ghost small">Copiar prévia</button>
+        </div>
+      </div>
     </section>
   </main>
+
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="true"></div>
+
   <script src="./script.js"></script>
 </body>
 </html>
