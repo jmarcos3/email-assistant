@@ -1,5 +1,10 @@
 const $ = (sel) => document.querySelector(sel)
-const API_DEFAULT = "http://localhost:8000"
+
+const API_LOCAL = "http://localhost:8000"
+const API_PROD = "https://email-assistant-u9v0.onrender.com" // Render
+const API_DEFAULT = window.location.hostname.includes("localhost")
+  ? API_LOCAL
+  : API_PROD
 
 const toasts = $("#toasts")
 function toast(msg, type = "ok", timeout = 2500) {
@@ -15,7 +20,7 @@ function setBadge(el, categoryRaw) {
     .toLowerCase()
     .trim()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") 
+    .replace(/[\u0300-\u036f]/g, "")
 
   el.className = "badge"
 
@@ -32,7 +37,6 @@ function setBadge(el, categoryRaw) {
   el.classList.add("badge--outro")
   el.textContent = categoryRaw || "—"
 }
-
 
 function setMethodBadge(el, data) {
   el.className = "badge badge--method"
@@ -98,8 +102,11 @@ function formatBytes(b) {
 }
 
 function getApiBase() {
-  return localStorage.getItem("apiBase") || API_DEFAULT
+  const stored = localStorage.getItem("apiBase")
+  if (stored && stored.trim()) return stored.trim()
+  return API_DEFAULT
 }
+
 function setApiBase(v) {
   if (v) localStorage.setItem("apiBase", v)
 }
@@ -133,7 +140,7 @@ const elapsedEl = $("#elapsed")
 const modelInfo = $("#modelInfo")
 
 let currentFile = null
-const MAX_SIZE = 10 * 1024 * 1024 
+const MAX_SIZE = 10 * 1024 * 1024
 
 apiInput.value = getApiBase()
 apiToggle.addEventListener("click", () => {

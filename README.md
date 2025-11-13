@@ -105,9 +105,10 @@ email-assistant/
 │   ├── Dockerfile
 │   ├── .env.example
 │   ├── samples/
-│   │   ├── produtivo.txt
+│   │   ├── borderline.txt
 │   │   ├── improdutivo.txt
 │   │   └── produtivo.pdf
+│   │   └── produtivo.txt
 │   └── tests/
 │       └── test_api.py
 ├── frontend/
